@@ -29,6 +29,7 @@ else:
     if uploaded_file is not None:
         lines = uploaded_file.readlines()
         movies = lines[0].decode("utf-8").strip().split(",")[1:]  # First line = movie names
+        cols = len(movies)
         users = []
         for line in lines[1:]:
             parts = line.decode("utf-8").strip().split(",")
@@ -37,6 +38,7 @@ else:
             data[user] = {}
             for i, rating in enumerate(parts[1:]):
                 data[user][movies[i]] = int(rating) if rating.strip() and int(rating) != -1 else None
+        rows = len(users)
 
 # Display the ratings matrix
 if data:
