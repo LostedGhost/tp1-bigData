@@ -45,8 +45,8 @@ if data:
     st.table(display_data)
 
 # Etape 2: Choix de la méthode de similarité
-st.header("2. Choose Similarity Method")
-similarity_method = st.selectbox("Select similarity method:", ["Similarité Cosinus", "Similarité Pearson"])
+st.header("2. Choix de la méthode de similarité")
+similarity_method = st.selectbox("Sélectionne la méthode de similarité:", ["Similarité Cosinus", "Similarité Pearson"])
 # Étape 3 : Calcul de la matrice des similarités (Pearson)
 st.header("3. Matrice des similarités entre les films")
 if data:
