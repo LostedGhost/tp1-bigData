@@ -44,8 +44,11 @@ if data:
     display_data = {user: {movie: rating if rating is not None else "Non évalué" for movie, rating in user_ratings.items()} for user, user_ratings in data.items()}
     st.table(display_data)
 
-# Étape 2 : Calcul de la matrice des similarités (Pearson)
-st.header("2. Matrice des similarités entre les films")
+# Etape 2: Choix de la méthode de similarité
+st.header("2. Choose Similarity Method")
+similarity_method = st.selectbox("Select similarity method:", ["Similarité Cosinus", "Similarité Pearson"])
+# Étape 3 : Calcul de la matrice des similarités (Pearson)
+st.header("3. Matrice des similarités entre les films")
 if data:
     # Calcul de la similarité de Pearson entre les films
     def pearson_similarity(vec1, vec2):
@@ -68,6 +71,16 @@ if data:
         
         # Retourner la similarité de Pearson
         return covariance / (std1 * std2) if std1 * std2 != 0 else 0
+    
+    def cosine_similarity(vec1, vec2):
+        # Calculate dot product
+        dot_product = sum(a * b for a, b in zip(vec1, vec2) if a is not None and b is not None)
+        # Calculate norms
+        norm_vec1 = sum(a ** 2 for a in vec1 if a is not None) ** 0.5
+        norm_vec2 = sum(b ** 2 for b in vec2 if b is not None) ** 0.5
+        # Return cosine similarity
+        return dot_product / (norm_vec1 * norm_vec2) if norm_vec1 * norm_vec2 != 0 else 0
+
 
     similarity_matrix = {}
     for movie1 in movies:
@@ -75,14 +88,17 @@ if data:
         for movie2 in movies:
             vec1 = [data[user].get(movie1) for user in users]
             vec2 = [data[user].get(movie2) for user in users]
-            similarity_matrix[movie1][movie2] = round(pearson_similarity(vec1, vec2), 2)
+            if similarity_method == "Similarité Cosinus":
+                similarity_matrix[movie1][movie2] = round(cosine_similarity(vec1, vec2), 2)
+            else:
+                similarity_matrix[movie1][movie2] = round(pearson_similarity(vec1, vec2), 2)
     
     # Affichage de la matrice des similarités
     st.write("Matrice des similarités entre les films :")
     st.table(similarity_matrix)
 
-# Étape 3 : Calcul du Top-N
-st.header("3. Calcul du Top-N")
+# Étape 4 : Calcul du Top-N
+st.header("4. Calcul du Top-N")
 if data:
     n = st.number_input("Entrez le nombre de recommandations (Top-N)", min_value=1, value=3)
     
@@ -110,7 +126,7 @@ if data:
     st.table(display_predicted_data)
     
     # Recommandation pour un utilisateur donné
-    st.header("4. Recommandation pour un utilisateur")
+    st.header("5. Recommandation pour un utilisateur")
     user = st.selectbox("Sélectionnez un utilisateur :", users)
     movie = st.selectbox("Sélectionnez un film :", movies)
     
